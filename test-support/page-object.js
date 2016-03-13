@@ -141,6 +141,16 @@ export default class PageObject {
     });
   }
 
+  _assertHasAttribute(rawSelector, attributeName, value, bool, message = '') {
+    return this.andThen(() => {
+      message = message || `element with selector: '${this.toSelector(rawSelector)}' containing attribute '${attributeName}': '${value}' ${bool ? 'was found' : 'was not found'}`;
+      const attributeValue = this.find(rawSelector).attr(attributeName);
+      const hasAttribute = attributeValue.indexOf(value) > -1;
+
+      this.assert.equal(hasAttribute, bool, message);
+    });
+  }
+
   assertURL(url = '', message = '') {
     return this.andThen(() => {
       message = message || `current url is: '${url}'`;
@@ -178,6 +188,14 @@ export default class PageObject {
 
   assertNotHasValue(rawSelector = '', text = '', message = '') {
     return this._assertHasValue(rawSelector, text, false, message);
+  }
+
+  assertHasAttribute(rawSelector = '', attributeName = '', value = '', message = '') {
+    return this._assertHasAttribute(rawSelector, attributeName, value, true, message);
+  }
+
+  assertNotHasAttribute(rawSelector = '', attributeName = '', value = '', message = '') {
+    return this._assertHasAttribute(rawSelector, attributeName, value, false, message);
   }
 
   andThen(callback) {

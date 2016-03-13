@@ -537,3 +537,57 @@ test('assertNotHasValue calls `assert.equal` passing in whether or not the eleme
 
   pageObject.assertNotHasValue('some-selector', 'the element doesnt have this value', 'some message');
 });
+
+test('assertHasAttribute calls `assert.equal` passing in whether or not the element attribute value has the passed in text', function(assert) {
+  assert.expect(5);
+
+  sandbox.stub(window, 'find', () => {
+    const fakeElement = {
+      attr() {
+        assert.ok(true, 'attribute value was called on the element returned from find');
+        return 'This is the element attribute value!';
+      }
+    };
+
+    return fakeElement;
+  });
+
+  const mockAssert = {
+    equal(actual, expected, message) {
+      assert.equal(actual, true, 'passed in a bool representing whether or not the element attribute value contained the passed in text');
+      assert.equal(expected, true, 'passes in a bool representing that the attribute value of the element is expected to have the passed in text');
+      assert.equal(message, 'some message', 'passes in an optional message');
+    }
+  };
+
+  const pageObject = new PageObject({ assert: mockAssert });
+
+  pageObject.assertHasAttribute('some-selector', 'data-value', 'This is the element attribute value!', 'some message');
+});
+
+test('assertNotHasAttribute calls `assert.equal` passing in whether or not the element attribute value has the passed in text', function(assert) {
+  assert.expect(5);
+
+  sandbox.stub(window, 'find', () => {
+    const fakeElement = {
+      attr() {
+        assert.ok(true, 'attribute value was called on the element returned from find');
+        return 'This is the attribute element value!';
+      }
+    };
+
+    return fakeElement;
+  });
+
+  const mockAssert = {
+    equal(actual, expected, message) {
+      assert.equal(actual, false, 'passed in a bool representing whether or not the element attribute value contained the passed in text');
+      assert.equal(expected, false, 'passes in a bool representing that the element attribute value is expected to not have the passed in text');
+      assert.equal(message, 'some message', 'passes in an optional message');
+    }
+  };
+
+  const pageObject = new PageObject({ assert: mockAssert });
+
+  pageObject.assertNotHasAttribute('some-selector', 'data-value', 'the element doesnt have this attribute value', 'some message');
+});
